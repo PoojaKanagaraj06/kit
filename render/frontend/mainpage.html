@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="public/css/mainpage.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+
+    <title>Mainpage</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="sidebar-wrapper">
+            <div class="sidebar" id="sidebar">
+                <ul>
+                    <div class="profile">
+                        <span><i class="usericon"><i class="fa-solid fa-user"><span id="username">Username</span></i>
+                            </i>
+                        </span>
+                    </div>
+                    <div class="indicator" id="indicator"></div>
+                    <li id="dashboard-menu"><i class="icon"><i
+                                class="fa-solid fa-dashboard"></i></i><span>Dashboard</span></li>
+                    <li id="income-menu"><i class="icon"><i class="fa-solid fa-money-bill"></i></i><span>Income</span>
+                    </li>
+                    <li id="expenses-menu"><i class="icon"><i
+                                class="fa-solid fa-money-bill-wave"></i></i><span>Expenses</span></li>
+                    <li id="charts-menu"><i class="icon"><i class="fa-solid fa-chart-column"></i></i><span>Charts</span>
+                    </li>
+                    <li id="logout-menu"><i class="icon"><i class="fa-solid fa-right-from-bracket"></i></i><span>Logout</span></li>
+                </ul>
+            </div>
+            <button class="toggle-btn" id="toggleBtn">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+        <div class="content">
+            <div id="dashboard-content" class="content-item active">
+                
+                <h2>Welcome <span id="greetuser">Username</span>,</h2>
+                <div class="dashboard-container">
+                    <div class="dashboard-cards">
+                        <div class="dashboard-card">
+                            <div class="dcard-header">
+                                <p>Income</p>
+                                <h3>₹<span id="dincome-amount">0</span></h3>
+                            </div>
+                            <div class="card-progress">
+                                <div class="circular-progress" id="income-progress">
+                                    <span class="progress-value" id="income-percentage">0%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="dcard-header">
+                                <p>Expenses</p>
+                                <h3>₹<span id="dexpense-amount">0</span></h3>
+                            </div>
+                            <div class="card-progress">
+                                <div class="circular-progress" id="expense-progress">
+                                    <span class="progress-value" id="expense-percentage">0%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="dcard-header">
+                                <p>Balance</p>
+                                <h3>₹<span id="dbalance-amount">0</span></h3>
+                            </div>
+                            <div class="card-progress">
+                                <div class="circular-progress" id="balance-progress">
+                                    <span class="progress-value" id="balance-percentage">0%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-charts">
+                        <div class="button-container">
+                            <button class="toggle-button active" id="incomeButton">Income</button>
+                            <button class="toggle-button" id="expenseButton">Expense</button>
+                        </div>
+                        <div class="dropdown-container">
+                            <label for="timeframeSelect">Select Time Period:</label>
+                            <select id="timeframeSelect">
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                            </select>
+                        </div>
+                        <canvas id="incomeExpenseChart"></canvas>
+                    </div>
+                </div>
+                
+            </div>
+        
+
+            <div id="income-content" class="content-item">
+                <h2>Income</h2>
+                <div class="income-summary">
+                    <div class="add-income-box card">
+                        <div class="card-header">Add Income</div>
+                        <div class="card-body">
+                            <form id="add-income-form">
+                                <label for="income-description">Description:</label>
+                                <input type="text" id="income-description" required>
+                                <label for="income-date">Date:</label>
+                                <input type="date" id="income-date" required>
+                                <label for="income-amount">Amount:</label>
+                                <input class="with-border" type="text" id="income-amount"
+                                    onkeypress="return (event.charCode >= 48 && event.charCode <= 57)||event.charCode == 44"
+                                    name="price" autocomplete="off" required>
+
+                                <label for="income-category">Category:</label>
+                                <div class="selects input-control">
+                                    <select required name="category" id="category">
+                                        <option value="">Select Option</option>
+                                        <option value="salary">Salary</option>
+                                        <option value="business">Business</option>
+                                        <option value="investment">Investment</option>
+                                        <option value="freelance">Freelance</option>
+                                        <option value="rental">Rental</option>
+                                        <option value="interest">Interest</option>
+                                        <option value="dividend">Dividend</option>
+                                        <option value="royalties">Royalties</option>
+                                        <option value="pension">Pension</option>
+                                        <option value="bonus">Bonus</option>
+
+                                        <option value="lottery">Lottery</option>
+                                        <option value="gift">Gift</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <button type="submit">Add Income</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="total-income-box card">
+                        <div class="card-header">Total Income</div>
+                        <div class="card-body">
+                            <p id="total-income">₹0</p>
+                        </div>
+                    </div>
+                    <div class="income-list-box card">
+                        <div class="card-header">All Incomes</div>
+                        <div class="card-body">
+                            <ul id="income-list">
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div id="expenses-content" class="content-item">
+                <h2>Expenses</h2>
+                <div class="expense-summary">
+                    <div class="add-expense-box card">
+                        <div class="card-header">Add Expense</div>
+                        <div class="card-body">
+                            <form id="add-expense-form">
+                                <label for="expense-description">Description:</label>
+                                <input type="text" id="expense-description" required>
+                                <label for="expense-date">Date:</label>
+                                <input type="date" id="expense-date" required>
+                                <label for="expense-amount">Amount:</label>
+                                <input class="with-border" type="text" id="expense-amount"
+                                    onkeypress="return (event.charCode >= 48 && event.charCode <= 57)||event.charCode == 44"
+                                    name="price" autocomplete="off" required>
+                                <label for="expense-category">Category:</label>
+                                <div class="selects input-control">
+                                    <select required name="category" id="expense-category">
+                                        <option value="" disabled>Select Option</option>
+                            <option value="education">Education</option>
+                            <option value="groceries">Groceries</option>
+                            <option value="health">Health</option>
+                            <option value="subscriptions">Subscriptions</option>
+                            <option value="takeaways">Takeaways</option>
+                            <option value="clothing">Clothing</option>
+                            <option value="travelling">Travelling</option>
+                            <option value="entertainment">Entertainment</option>
+                            <option value="utilities">Utilities</option>
+                            <option value="transportation">Transportation</option>
+                            <option value="rent">Rent</option>
+                            <option value="insurance">Insurance</option>
+                            <option value="savings">Savings</option>
+                            <option value="charity">Charity</option>
+                            <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <button type="submit">Add Expense</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="total-expense-box card">
+                        <div class="card-header">Total Expense</div>
+                        <div class="card-body">
+                            <p id="total-expense">₹0</p>
+                        </div>
+                        <div id="balance-container">
+                            <h2>Balance</h2>
+                            <div id="balance-display">
+                                <div class="digit"><span class="front">0</span><span class="back">0</span></div>
+                                <div class="digit"><span class="front">0</span><span class="back">0</span></div>
+                                <div class="digit"><span class="front">0</span><span class="back">0</span></div>
+                                <div class="digit"><span class="front">0</span><span class="back">0</span></div>
+                                <div class="digit"><span class="front">0</span><span class="back">0</span></div>
+                                <div class="digit"><span class="front">0</span><span class="back">0</span></div>
+                                <div class="digit"><span class="front">0</span><span class="back">0</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="expense-list-box card">
+                        <div class="card-header">Expense List</div>
+                        <div class="card-body">
+                            <ul id="expense-list"></ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div id="charts-content" class="content-item">
+                <h2>Charts</h2>
+                <div class="dashboard-charts">
+                    <div class="pie-charts-container">
+                        <div class="chart-wrapper">
+                            <h3>Income Categories</h3>
+                            <canvas id="incomeCategoryPieChart" ></canvas>
+                        </div>
+                        <div class="chart-wrapper">
+                            <h3>Expense Categories</h3>
+                            <canvas id="expenseCategoryPieChart"></canvas>
+                        </div>
+                    </div>
+                    <div id="advice-container" class="advice-box">
+                        
+                        <p id="advice-text"></p>
+                    </div>
+                </div>       
+            </div>
+        </div>
+        
+        
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script src="/public/js/mainpage.js"></script>
+    <script src="/public/js/chart.js"></script>
+    <script src="/public/js/script.js"></script>
+    <script src="/public/js/balance.js"></script>
+    <script src="/public/js/categorychart.js"></script>
+    <script src="/public/js/chatbot.js"></script>
+
+    <div id="chatbotIcon" class="chatbot-icon">
+        <i class="fa fa-comments"></i>
+      </div>
+      <div id="chatbotContainer" class="chatbot-container">
+        <div class="chat-header">Expense Budget Tracker Chatbot</div>
+        <div class="chat-box" id="chatBox"></div>
+        <div class="chat-input">
+            <input type="text" id="userInput" placeholder="Ask your budget query..." />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+      </div>
+      
+      </body>
+      <script src="/public/js/chatbot.js"></script>
+      <script src="/public/js/logout.js"></script>
+</body>
+
+</html>
