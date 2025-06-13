@@ -1,61 +1,57 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-const path = require('path');
-const bcrypt = require('bcrypt');
-const session = require('express-session');
-const MongoStore = require('connect-mongo');
-require('dotenv').config();
-const cors = require('cors');
-const app = express();
+require('dotenv').config();                 // ← load .env first
+
+const express     = require('express');
+const mongoose    = require('mongoose');
+const session     = require('express-session');
+const MongoStore  = require('connect-mongo');
+const cors        = require('cors');
+const bcrypt      = require('bcrypt');
+const bodyParser  = require('body-parser');
+const path        = require('path');
+
+const app  = express();
 const PORT = process.env.PORT || 3000;
-// Add this route in server.js
-app.get('/check-auth', (req, res) => {
-    if (req.session.user) {
-        res.json({ authenticated: true, user: req.session.user });
-    } else {
-        res.status(401).json({ authenticated: false, message: "Unauthorized" });
-    }
-});
+const MONGO_URI      = process.env.MONGO_URI;
+const SESSION_SECRET = process.env.SESSION_SECRET;
 
-// Middleware
-
-
-
-
-// Your routes here
-
-app.listen(3000, () => {
-    console.log('Server running on port 3000');
-});
+/* ---------------- basic middleware ---------------- */
 app.use(cors({
-    origin: 'https://thespendsmart.netlify.app',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true
+  origin: 'https://thespendsmart.netlify.app',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
 }));
 
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Static Files
 app.use(express.static(path.join(__dirname, '../frontend')));
 app.use(express.static(path.join(__dirname, '../frontend/public')));
 
-// Session Middleware
-app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        secure: true, // Set to true if using HTTPS
+/* ---------------- connect Mongo, then mount session ---------------- */
+(async () => {
+  try {
+    await mongoose.connect(MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
+    console.log('✓ MongoDB connected');
+
+    app.use(session({
+      secret: SESSION_SECRET,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        secure: process.env.NODE_ENV === 'production', // HTTPS only in prod
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 // 24 hours
-    },
-    store: MongoStore.create({ 
-        mongoUrl: process.env.MONGO_URI,
+        sameSite: 'none',                              // cross‑site cookie for Netlify
+        maxAge: 24 * 60 * 60 * 1000                   // 24 h
+      },
+      store: MongoStore.create({
+        client: mongoose.connection.getClient(),       // ← no mongoUrl exposed
         collectionName: 'sessions'
-    })
-}));
+      })
+    }));
+
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {
