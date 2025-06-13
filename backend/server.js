@@ -207,6 +207,11 @@ app.post('/add-expense', authenticateUser, async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error('Error:', err);
+    process.exit(1);
+  }
+})(); // <--- This closes the IIFE
